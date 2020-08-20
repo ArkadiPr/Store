@@ -3,12 +3,12 @@ package com.kostandov.bookstore.entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
-@Data
 @Entity
-@Table(name = "order_items")
+@Table(name = "orders_items")
+@Data
 public class OrderItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -18,14 +18,33 @@ public class OrderItem {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @Column(name = "price")
+    private BigDecimal price;
+
+    @Column(name = "quantity")
+    private int quantity;
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @Column(name = "count")
-    private Integer count;
+    public OrderItem(Book book) {
+        this.book = book;
+        this.quantity = 1;
+        this.price = new BigDecimal(0).add(book.getPrice());
+    }
 
-    @Column(name = "price")
-    private Integer price;
+    public void increment() {
+        this.quantity++;
+        this.price = new BigDecimal(quantity * book.getPrice().doubleValue());
+    }
 
+    public void decrement() {
+        this.quantity--;
+        this.price = new BigDecimal(quantity * book.getPrice().doubleValue());
+    }
+
+    public boolean isEmpty() {
+        return quantity == 0;
+    }
 }

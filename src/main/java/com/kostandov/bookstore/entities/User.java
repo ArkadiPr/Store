@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 @Data
 @Table(name = "users")
 public class User {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,9 +33,4 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;
-
-    @OneToMany(mappedBy = "user")
-    private List<Order> orders;
-
-
 }

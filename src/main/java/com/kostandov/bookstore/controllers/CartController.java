@@ -1,78 +1,46 @@
 package com.kostandov.bookstore.controllers;
 
 import com.kostandov.bookstore.beans.Cart;
-import com.kostandov.bookstore.entities.Book;
-import com.kostandov.bookstore.entities.Order;
-import com.kostandov.bookstore.entities.OrderItem;
-import com.kostandov.bookstore.services.OrderItemService;
-import com.kostandov.bookstore.services.OrderService;
-import com.kostandov.bookstore.services.UserService;
+import com.kostandov.bookstore.services.BookService;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/cart")
 @AllArgsConstructor
 public class CartController {
-
-    Cart cart;
-
-    OrderItemService orderItemService;
-
-    OrderService orderService;
-
-    UserService userService;
-
-
-
+    private BookService bookService;
+    private Cart cart;
 
     @GetMapping
-    public String showAllOrders(Model model){
-        HashMap<Book, Integer> allOrders=cart.getBooksCart();
-        model.addAttribute("allOrders",allOrders.entrySet());
-
-        return "cart-page";
+    public String showCartPage(Model model) {
+        return "cart";
     }
 
-    @GetMapping("/saveOrder")
-    public String  saveAllOrders(){
-        User currentUser=(User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        com.kostandov.bookstore.entities.User loggedInUser=userService.findByUsername(currentUser.getUsername()).
-                orElseThrow(()->new UsernameNotFoundException("No Such user"));
-
-        HashMap<Book, Integer> allOrders=cart.getBooksCart();
-        Order order=new Order();
-        List<OrderItem> orderItemList=new ArrayList<>();
-
-        for(Map.Entry<Book,Integer> orderBook:allOrders.entrySet()){
-            OrderItem orderItem=new OrderItem();
-            orderItem.setBook(orderBook.getKey());
-            orderItem.setCount(orderBook.getValue());
-            orderItem.setPrice(orderBook.getKey().getPrice().intValue()*orderBook.getValue());
-
-            orderItemList.add(orderItem);
-            orderItemService.saveOrUpdate(orderItem);
-        }
-        order.setOrderItems(orderItemList);
-        order.setUser(loggedInUser);
-        orderService.saveOrUpdate(order);
-
-        return "redirect:/books";
+    @GetMapping("/add/{bookId}")
+    public void addProductToCartById(@PathVariable Long bookId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        cart.add(bookService.findById(bookId));
+        response.sendRedirect(request.getHeader("referer"));
     }
 
+    @GetMapping("/decrement/{bookId}")
+    public void decrementProductToCartById(@PathVariable Long bookId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        cart.decrement(bookService.findById(bookId));
+        response.sendRedirect(request.getHeader("referer"));
+    }
 
-
-
+    @GetMapping("/remove/{bookId}")
+    public void removeProductFromCartById(@PathVariable Long bookId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        cart.removeByProductId(bookId);
+        response.sendRedirect(request.getHeader("referer"));
+    }
 }

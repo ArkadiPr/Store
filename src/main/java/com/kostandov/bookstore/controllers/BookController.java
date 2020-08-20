@@ -16,44 +16,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-//@RequestMapping("/books")
+@RequestMapping("/books")
 @AllArgsConstructor
 public class BookController {
     private BookService bookService;
 
-    private Cart cart;
-
-
-    @GetMapping({"/books/{id}","/books"})
+    @GetMapping
     public String showAllBooks(Model model,
                                @RequestParam(name = "p", defaultValue = "1") Integer pageIndex,
-                               @RequestParam MultiValueMap<String, String> params,
-                               @PathVariable(required = false) Long id
+                               @RequestParam MultiValueMap<String, String> params
     ) {
-        if(id!=null){
-            cart.addBookToCart(bookService.findById(id));
-        }
         BookFilter bookFilter = new BookFilter(params);
         Page<Book> page = bookService.findAll(bookFilter.getSpec(), pageIndex - 1, 5);
         model.addAttribute("booksPage", page);
         model.addAttribute("filterDef", bookFilter.getFilterParams());
         return "store-page";
-    }
-
-
-
-
-/*    @GetMapping(value = "/addtocart/{id}")
-    public String addToCart(@PathVariable Long id) {
-        cart.addBookToCart(bookService.findById(id));
-        return "redirect:/books";
-    }*/
-
-    // Эта часть кода будет сильно скорректирована после темы Spring REST
-    @GetMapping("/rest")
-    @ResponseBody
-    @CrossOrigin("*")
-    public List<Book> getAllBooks() {
-        return bookService.findAll();
     }
 }

@@ -15,7 +15,6 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 public class Book {
-
     @AllArgsConstructor
     @Getter
     public enum Genre {
@@ -41,28 +40,7 @@ public class Book {
     @Column(name = "publish_year")
     private int publishYear;
 
+    @Column(name = "genre")
     @Enumerated(EnumType.STRING)
-    @Column(name="genre")
     private Genre genre;
-
-    @OneToMany
-    private List<OrderItem> orderItems;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Book book = (Book) o;
-        return publishYear == book.publishYear &&
-                Objects.equals(id, book.id) &&
-                Objects.equals(title, book.title) &&
-                Objects.equals(description, book.description) &&
-                Objects.equals(price, book.price) &&
-                genre == book.genre;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, description, price, publishYear, genre);
-    }
 }
