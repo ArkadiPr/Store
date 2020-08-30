@@ -4,6 +4,7 @@ package com.kostandov.bookstore.controllers;
 import com.kostandov.bookstore.beans.Cart;
 import com.kostandov.bookstore.entities.Order;
 import com.kostandov.bookstore.entities.User;
+import com.kostandov.bookstore.rabbitmq.RabbitMqService;
 import com.kostandov.bookstore.services.OrderService;
 import com.kostandov.bookstore.services.UserService;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,9 @@ public class OrderController {
     private UserService userService;
     private OrderService orderService;
     private Cart cart;
+    private RabbitMqService rabbitMqService;
+
+
 
     @GetMapping("/create")
     public String createOrder(Principal principal, Model model) {
@@ -36,7 +40,9 @@ public class OrderController {
     public String confirmOrder(Principal principal) {
         User user = userService.findByUsername(principal.getName()).get();
         Order order = new Order(user, cart);
+        order.setStatus(Order.Status.IN_PROCESS);
         order = orderService.saveOrder(order);
+        rabbitMqService.sendMessage( order.getId().intValue());
         return order.getId() + " " + order.getPrice();
     }
 }

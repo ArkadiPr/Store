@@ -2,7 +2,10 @@ package com.kostandov.bookstore.entities;
 
 
 import com.kostandov.bookstore.beans.Cart;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
@@ -13,7 +16,15 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @Data
+@NoArgsConstructor
 public class Order {
+
+    @AllArgsConstructor
+    @Getter
+    public enum Status {
+        IN_PROCESS, IS_DONE;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -30,6 +41,11 @@ public class Order {
     @Column(name = "price")
     private BigDecimal price;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Order.Status status;
+
+
     public Order(User user, Cart cart) {
         this.user = user;
         this.items = new ArrayList<>();
@@ -40,4 +56,7 @@ public class Order {
         this.price = new BigDecimal(cart.getPrice().doubleValue());
         cart.clear();
     }
+
+
+
 }
