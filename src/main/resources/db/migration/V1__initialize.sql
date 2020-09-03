@@ -64,7 +64,7 @@ insert into books (title, description, genre, price, publish_year) values
 
 
 drop table if exists orders cascade;
-create table orders (id bigserial, user_id bigint not null, price numeric(8, 2) not null, primary key(id), constraint fk_user_id foreign key (user_id) references users (id));
+create table orders (id bigserial, user_id bigint not null, price numeric(8, 2) not null, primary key(id), constraint fk_user_id foreign key (user_id) references users (id),status varchar(255));
 
 drop table if exists orders_items cascade;
 create table orders_items (id bigserial, order_id bigint not null, book_id bigint not null, quantity int, price numeric(8, 2), primary key(id), constraint fk_book_id foreign key (book_id) references books (id), constraint fk_order_id foreign key (order_id) references orders (id));
