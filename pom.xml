@@ -83,6 +83,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.junit/junit5-engine &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.junit</groupId>-->
+<!--            <artifactId>junit5-engine</artifactId>-->
+<!--            <version>5.0.0-ALPHA</version>-->
+<!--        </dependency>-->
+
 
 
 
@@ -107,6 +114,11 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
